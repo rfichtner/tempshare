@@ -12,7 +12,7 @@ class TestCliUserInterface
 	void testCompute()
 	{
 		
-		final CliUserInterface cli = new CliUserInterface(new String[] {"--path", "C:\\temp"});
+		final CliUserInterface cli = new CliUserInterface(new String[] {"--path", "C:\\temp", "--age", "60"});
 		
 		cli.compute();
 		

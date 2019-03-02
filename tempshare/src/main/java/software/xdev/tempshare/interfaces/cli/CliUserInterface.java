@@ -2,6 +2,7 @@ package software.xdev.tempshare.interfaces.cli;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -35,6 +36,10 @@ public class CliUserInterface
 		final Option optionPath = Option.builder().longOpt("path").hasArg().desc("root path").required().build();
 		options.addOption(optionPath);
 		
+		final Option optionAge =
+			Option.builder().longOpt("age").hasArg().desc("maximum age of files in minutes").required().build();
+		options.addOption(optionAge);
+		
 		// TODO declare options
 		
 		// create the parser
@@ -45,8 +50,7 @@ public class CliUserInterface
 			final CommandLine line = parser.parse(options, this.args, true);
 			
 			final Path root = Paths.get(line.getOptionValue(optionPath.getLongOpt()));
-			
-			
+			final Duration maxAge = Duration.ofMinutes(Long.valueOf(line.getOptionValue(optionAge.getLongOpt())));
 			
 			// TODO do something
 		}
