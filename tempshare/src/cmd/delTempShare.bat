@@ -1,0 +1,1 @@
+java -jar C:\batch\TempShare\ts.jar /path G:\Tempshare /state 0 /age 7 /simulate 1 /output 1 > C:\batch\TempShare\log.txt
