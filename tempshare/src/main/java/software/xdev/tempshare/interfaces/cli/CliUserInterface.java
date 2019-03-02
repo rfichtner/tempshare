@@ -14,6 +14,10 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import software.xdev.tempshare.application.ApplicationMode;
+import software.xdev.tempshare.application.ReadOnlyStatus;
+import software.xdev.tempshare.application.TempshareSpecification;
+
 
 public class CliUserInterface
 {
@@ -40,7 +44,17 @@ public class CliUserInterface
 			Option.builder().longOpt("age").hasArg().desc("maximum age of files in minutes").required().build();
 		options.addOption(optionAge);
 		
-		// TODO declare options
+		final Option optionApplicationMode =
+			Option.builder().longOpt("applicationMode").hasArg().desc(
+				"Application mode: ANALYZE | EXECUTE").required().build();
+		options.addOption(optionApplicationMode);
+		
+		final Option optionReadOnlyStatus =
+			Option.builder().longOpt("readOnlyStatus").hasArg().desc(
+				"Should the read only flag be respected: IGNORE | RESPECT").required().build();
+		options.addOption(optionReadOnlyStatus);
+		
+		
 		
 		// create the parser
 		final CommandLineParser parser = new DefaultParser();
@@ -51,6 +65,14 @@ public class CliUserInterface
 			
 			final Path root = Paths.get(line.getOptionValue(optionPath.getLongOpt()));
 			final Duration maxAge = Duration.ofMinutes(Long.valueOf(line.getOptionValue(optionAge.getLongOpt())));
+			final ApplicationMode applicationMode =
+				ApplicationMode.valueOf(line.getOptionValue(optionApplicationMode.getLongOpt()));
+			
+			final ReadOnlyStatus readOnlyStatus =
+				ReadOnlyStatus.valueOf(line.getOptionValue(optionReadOnlyStatus.getLongOpt()));
+			
+			final TempshareSpecification specification =
+				new TempshareSpecification(root, maxAge, applicationMode, readOnlyStatus);
 			
 			// TODO do something
 		}
