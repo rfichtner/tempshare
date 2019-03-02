@@ -1,0 +1,2 @@
+# tempshare
+Cleans up fileshares
