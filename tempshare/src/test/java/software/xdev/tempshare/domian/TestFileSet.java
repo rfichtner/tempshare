@@ -89,7 +89,6 @@ class TestFileSet
 			new FileSet(ReadOnlyStatus.RESPECT, Duration.ofDays(2), this.tempFolder.getRoot().toPath());
 		final List<Path> files = fileSet.scan();
 		
-		LOG.debug(files.toString());
 		
 		Assertions.assertTrue(
 			files.stream().filter(p -> p.getFileName().toString().endsWith("10daysOld.txt")).count() == 1);
