@@ -3,6 +3,8 @@ package software.xdev.tempshare.application;
 import java.nio.file.Path;
 import java.time.Duration;
 
+import software.xdev.tempshare.domain.ReadOnlyStatus;
+
 
 public class TempshareSpecification
 {

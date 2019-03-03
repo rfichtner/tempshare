@@ -1,4 +1,4 @@
-package software.xdev.tempshare;
+package software.xdev.tempshare.interfaces.cli;
 
 import org.junit.jupiter.api.Test;
 

@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import software.xdev.tempshare.application.ApplicationMode;
-import software.xdev.tempshare.application.ReadOnlyStatus;
 import software.xdev.tempshare.application.TempshareSpecification;
+import software.xdev.tempshare.domain.ReadOnlyStatus;
 
 
 public class CliUserInterface
