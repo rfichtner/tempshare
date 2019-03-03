@@ -59,6 +59,20 @@ class TestFileSet
 		file1DayWithReadOnly.setLastModified(LocalDateTime.now().minusDays(1).toInstant(ZoneOffset.UTC).toEpochMilli());
 		file1DayWithReadOnly.setReadOnly();
 		
+		
+		final File dir10daysOld = this.tempFolder.newFolder("10daysOld");
+		dir10daysOld.setLastModified(LocalDateTime.now().minusDays(10).toInstant(ZoneOffset.UTC).toEpochMilli());
+		
+		final File dir1dayOld = this.tempFolder.newFolder("1dayOld");
+		dir1dayOld.setLastModified(LocalDateTime.now().minusDays(1).toInstant(ZoneOffset.UTC).toEpochMilli());
+		
+		
+		final File dir10daysOldWithFile = this.tempFolder.newFolder("10daysOldWithFile");
+		dir10daysOldWithFile.setLastModified(LocalDateTime.now().minusDays(10).toInstant(ZoneOffset.UTC).toEpochMilli());
+		final File dir10daysChild = new File(dir10daysOldWithFile, "child.txt");
+		dir10daysChild.createNewFile();
+		
+		
 	}
 	
 	@AfterEach
@@ -75,10 +89,18 @@ class TestFileSet
 			new FileSet(ReadOnlyStatus.RESPECT, Duration.ofDays(2), this.tempFolder.getRoot().toPath());
 		final List<Path> files = fileSet.scan();
 		
+		LOG.debug(files.toString());
+		
 		Assertions.assertTrue(
 			files.stream().filter(p -> p.getFileName().toString().endsWith("10daysOld.txt")).count() == 1);
 		Assertions.assertTrue(
 			files.stream().filter(p -> p.getFileName().toString().endsWith("3daysOld.txt")).count() == 1);
+		Assertions.assertTrue(
+			files.stream().filter(p -> p.getFileName().toString().endsWith("10daysOld")).count() == 1);
+		
+		
+		
+		
 		
 		Assertions.assertFalse(
 			files.stream().filter(p -> p.getFileName().toString().endsWith("10daysOldWithReadOnly.txt")).count() == 1);
@@ -90,6 +112,11 @@ class TestFileSet
 			files.stream().filter(p -> p.getFileName().toString().endsWith("1dayOldWithReadOnly.txt")).count() == 1);
 		Assertions.assertFalse(
 			files.stream().filter(p -> p.getFileName().toString().endsWith("1dayOld.txt")).count() == 1);
+		Assertions.assertFalse(
+			files.stream().filter(p -> p.getFileName().toString().endsWith("1dayOld")).count() == 1);
+		Assertions.assertFalse(
+			files.stream().filter(p -> p.getFileName().toString().endsWith("10daysOldWithFile")).count() == 1);
+
 		
 	}
 	
@@ -110,6 +137,12 @@ class TestFileSet
 			files.stream().filter(p -> p.getFileName().toString().endsWith("10daysOldWithReadOnly.txt")).count() == 1);
 		Assertions.assertTrue(
 			files.stream().filter(p -> p.getFileName().toString().endsWith("3daysOldWithReadOnly.txt")).count() == 1);
+		Assertions.assertTrue(
+			files.stream().filter(p -> p.getFileName().toString().endsWith("10daysOld")).count() == 1);
+		
+		
+		
+		
 		
 		Assertions.assertFalse(
 			files.stream().filter(p -> p.getFileName().toString().endsWith("fileFromToday.txt")).count() == 1);
@@ -117,6 +150,8 @@ class TestFileSet
 			files.stream().filter(p -> p.getFileName().toString().endsWith("1dayOldWithReadOnly.txt")).count() == 1);
 		Assertions.assertFalse(
 			files.stream().filter(p -> p.getFileName().toString().endsWith("1dayOld.txt")).count() == 1);
+		Assertions.assertFalse(
+			files.stream().filter(p -> p.getFileName().toString().endsWith("10daysOldWithFile")).count() == 1);
 		
 	}
 	

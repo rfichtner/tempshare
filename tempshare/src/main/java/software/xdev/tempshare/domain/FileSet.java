@@ -1,6 +1,7 @@
 package software.xdev.tempshare.domain;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -8,6 +9,7 @@ import java.nio.file.attribute.DosFileAttributeView;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -32,12 +34,42 @@ public class FileSet
 	
 	public List<Path> scan() throws IOException
 	{
+		final List<Path> scanResult = new ArrayList<>();
 		
+		// files
 		try(Stream<Path> paths = Files.walk(this.root))
 		{
-			return paths.filter(p -> p.toFile().isFile()).filter(this.before(this.maximumFileAge)).filter(
-				this.readOnly(this.readOnlyStatus)).filter(p -> true).collect(Collectors.toList());
+			scanResult.addAll(
+				paths.filter(p -> p.toFile().isFile()).filter(this.before(this.maximumFileAge)).filter(
+					this.readOnly(this.readOnlyStatus)).filter(p -> true).collect(Collectors.toList()));
 		}
+		
+		// directories
+		try(Stream<Path> paths = Files.walk(this.root))
+		{
+			scanResult.addAll(
+				paths.filter(p -> p.toFile().isDirectory()).filter(this.isDirectoryEmpty()).filter(
+					this.before(this.maximumFileAge)).filter(
+						this.readOnly(this.readOnlyStatus)).filter(p -> true).collect(Collectors.toList()));
+		}
+		
+		return scanResult;
+	}
+	
+	private Predicate<Path> isDirectoryEmpty()
+	{
+		return p ->
+		{
+			try(DirectoryStream<Path> dirStream = Files.newDirectoryStream(p))
+			{
+				return !dirStream.iterator().hasNext();
+			}
+			catch(final IOException e)
+			{
+				// to be safe
+				return false;
+			}
+		};
 	}
 	
 	private Predicate<Path> readOnly(final ReadOnlyStatus readOnlyStatus)
