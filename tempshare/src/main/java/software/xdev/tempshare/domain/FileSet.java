@@ -7,16 +7,16 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.ZoneOffset;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 public class FileSet
 {
-	private final List<Path> files = new ArrayList<>();
 	
 	private final ReadOnlyStatus readOnlyStatus;
 	private final Duration maximumFileAge;
@@ -35,12 +35,10 @@ public class FileSet
 		
 		try(Stream<Path> paths = Files.walk(this.root))
 		{
-			paths.filter(p -> p.toFile().isFile()).filter(this.before(this.maximumFileAge)).filter(
-				this.readOnly(this.readOnlyStatus)).filter(p -> true).forEach(
-				System.out::println);
+			return paths.filter(p -> p.toFile().isFile()).filter(this.before(this.maximumFileAge)).filter(
+				this.readOnly(this.readOnlyStatus)).filter(p -> true).collect(Collectors.toList());
 		}
 		
-		return this.files;
 	}
 	
 	private Predicate<Path> readOnly(final ReadOnlyStatus readOnlyStatus)
@@ -81,7 +79,7 @@ public class FileSet
 			{
 				final BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
 				final LocalDateTime lastmodified =
-					LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), TimeZone.getDefault().toZoneId());
+					LocalDateTime.ofEpochSecond(attr.lastModifiedTime().to(TimeUnit.SECONDS), 0, ZoneOffset.UTC);
 				return lastmodified.isBefore(LocalDateTime.now().minus(maximumFileAge));
 			}
 			catch(final IOException e)
