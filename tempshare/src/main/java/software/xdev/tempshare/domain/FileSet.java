@@ -38,7 +38,6 @@ public class FileSet
 			return paths.filter(p -> p.toFile().isFile()).filter(this.before(this.maximumFileAge)).filter(
 				this.readOnly(this.readOnlyStatus)).filter(p -> true).collect(Collectors.toList());
 		}
-		
 	}
 	
 	private Predicate<Path> readOnly(final ReadOnlyStatus readOnlyStatus)
