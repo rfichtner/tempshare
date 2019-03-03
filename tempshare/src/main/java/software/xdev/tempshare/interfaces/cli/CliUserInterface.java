@@ -1,5 +1,6 @@
 package software.xdev.tempshare.interfaces.cli;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import software.xdev.tempshare.application.ApplicationMode;
 import software.xdev.tempshare.application.TempshareSpecification;
+import software.xdev.tempshare.application.TempshareUseCase;
 import software.xdev.tempshare.domain.ReadOnlyStatus;
 
 
@@ -54,8 +56,6 @@ public class CliUserInterface
 				"Should the read only flag be respected: IGNORE | RESPECT").required().build();
 		options.addOption(optionReadOnlyStatus);
 		
-		
-		
 		// create the parser
 		final CommandLineParser parser = new DefaultParser();
 		try
@@ -74,7 +74,8 @@ public class CliUserInterface
 			final TempshareSpecification specification =
 				new TempshareSpecification(root, maxAge, applicationMode, readOnlyStatus);
 			
-			// TODO do something
+			final TempshareUseCase tempshareUseCase = new TempshareUseCase(specification);
+			tempshareUseCase.run();
 		}
 		catch(final ParseException ex)
 		{
@@ -83,6 +84,10 @@ public class CliUserInterface
 			LOG.error("Parsing failed. Reason: " + ex.getMessage(), ex);
 			final HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("tempshare", options);
+		}
+		catch(final IOException e)
+		{
+			LOG.error("Could not perform all operations. See log.", e);
 		}
 	}
 	
